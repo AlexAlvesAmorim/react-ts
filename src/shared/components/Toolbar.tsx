@@ -7,7 +7,6 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import UploadFileIcon from "@mui/icons-material/UploadFile"
 import { ThemeToggle } from "./ThemeToggle"
-import UpdateBell from "./UpdateBell"
 
 type ToolbarProps = {
   currentPage: number
@@ -143,10 +142,6 @@ export function Toolbar({
 
       <div className="pdf-theme-controls">
         <ThemeToggle />
-      </div>
-
-      <div className="pdf-update-controls">
-        <UpdateBell />
       </div>
     </div>
 

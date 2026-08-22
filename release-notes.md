@@ -1,27 +1,29 @@
-# ALFA PDF Reader 2.1.1 - Release
+# ALFA PDF Reader 2.1.5 - Release
 
 ## 📦 Sobre
 
-**ALFA PDF Reader 2.1.1** é um visualizador PDF profissional desenvolvido para Electron + React + TypeScript com foco em performance, segurança e experiência do usuário.
+**ALFA PDF Reader 2.1.5** é um visualizador PDF profissional desenvolvido para Electron + React + TypeScript com foco em performance, segurança e experiência do usuário.
 
-### 🛠️ Correção em 2.1.1 (hotfix)
+### 🛠️ Correções em 2.1.5
 
-- **Instalador agora é montado a partir do build atual** — a v2.1.0 foi publicada empacotando o `win-unpacked` desatualizado (código da 2.0.0 + Electron antigo), o que fazia o app reportar a versão 2.0.0 e continuar sugerindo a própria atualização. O pipeline de build agora regenera o `win-unpacked` do zero a cada release (runtime Electron 43.4.1, código compilado novo, ícone e manifesto do auto-updater), garantindo que o instalador entregue exatamente a versão anunciada.
+- **Correção do crash da atualização** — a verificação automática de updates agora acontece apenas no app instalado (em modo de desenvolvimento o electron-updater disparava erro ao iniciar, abrindo o painel de atualização com falha a cada abertura). Na versão instalada, o app verifica novas versões silenciosamente ao iniciar e só avisa quando há novidade
+- **Ícone do aplicativo corrigido** — o build anterior não incluía o ícone na janela/taskbar (aparecia o ícone padrão do Electron). Ícone multi-resolução (16–256px, 32bpp) recriado a partir do logo oficial e embutido no executável, na janela, nos atalhos e na associação de arquivos .pdf
+- **Sino de atualizações com layout corrigido** — painel de notificações movido para o canto inferior direito do app, com as variáveis de tema corrigidas (fundo, bordas e barra de progresso renderizavam transparentes/quebrados) e auto-abertura ao detectar nova versão, com progresso de download e botão "Instalar agora"
+- **Instalação estritamente como administrador** — removida a opção de instalação "somente para o usuário atual"; o instalador agora exige administrador e instala sempre em `C:\Program Files\ALFA PDF Reader\`, evitando instalações híbridas e problemas de compatibilidade nas atualizações
 
 ### ✨ Novidades (desde 2.0.0)
 
-- **Correção: abertura de PDF por duplo clique no sistema** — o arquivo agora sempre abre junto com o programa (tratamento de caminhos com aspas, relativos e `file://`, e aguardo do renderer carregar antes de enviar o documento)
-- **Persistência das configurações de impressão** — cor/P&B, cópias, páginas, qualidade e impressora são memorizados e reutilizados no próximo print, até o usuário alterar
-- **Impressão 100% offline** — pdf.js agora é carregado localmente (removido o CDN externo) e a janela de impressão foi endurecida (segurança reforçada)
-- **Senhas sem injeção de HTML** — o payload do PDF (bytes, senha, páginas, escala) é entregue por IPC seguro, sem interpolar conteúdo no HTML
-- **Arquivos recentes** — lista dos últimos 10 documentos na tela inicial + integração com a Jump List do Windows
-- **Electron 43.4.1** — runtime atualizado (anteriormente Electron 30) com Node 24
+- **Correção: abertura de PDF por duplo clique no sistema** — o arquivo agora sempre abre junto com o programa
+- **Persistência das configurações de impressão** — cor/P&B, cópias, páginas, qualidade e impressora são memorizados
+- **Impressão 100% offline** — pdf.js carregado localmente, janela de impressão endurecida
+- **Arquivos recentes** — lista dos últimos 10 documentos + integração com a Jump List do Windows
+- **Electron 43.4.1** — runtime atualizado com Node 24
 
 ### 🚀 Recursos Principais
 
 - **Performance**: Carregamento rápido e renderização otimizada com PDF.js
 - **Segurança**: Suporte total a PDFs protegidos por senha
-- **Auto Update**: Verificação automática de atualizações ao iniciar
+- **Auto Update**: Verificação automática e silenciosa de atualizações ao iniciar
 - **Múltiplas abas**: Trabalhe com vários documentos simultaneamente
 - **Zoom inteligente**: Ajuste de 50% a 300%
 - **Impressão profissional**: Controle avançado de páginas, cores, cópias e qualidade
@@ -29,7 +31,7 @@
 
 ### 📁 Arquivos do Release
 
-- `ALFA-PDF-Reader-2.1-Setup-x64.exe` - Instalador Inno Setup (~17 MB)
+- `ALFA-PDF-Reader-2.1.5-Setup-x64.exe` - Instalador Inno Setup (~17 MB)
 - `latest.yml` - Manifesto de atualização automática (electron-updater)
 
 ### 🛠️ Tecnologias
@@ -42,7 +44,7 @@
 
 ### 🔧 Instalação
 
-1. Execute `ALFA-PDF-Reader-2.1-Setup-x64.exe` como administrador
+1. Execute `ALFA-PDF-Reader-2.1.5-Setup-x64.exe` como administrador
 2. Siga o assistente de instalação
 3. O aplicativo instalará em `C:\Program Files\ALFA PDF Reader\`
 4. Criará atalhos na Área de Trabalho e Menu Iniciar

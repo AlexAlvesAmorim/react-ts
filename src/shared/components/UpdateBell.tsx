@@ -23,7 +23,7 @@ export default function UpdateBell() {
   const [percent, setPercent] = useState<number>(0)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [releaseNotes, setReleaseNotes] = useState<string>('')
-  const [isChecking, setIsChecking] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const bellRef = useRef<HTMLButtonElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -33,46 +33,57 @@ export default function UpdateBell() {
 
     api.onUpdateChecking(() => {
       setState('checking')
-      setIsChecking(true)
+      setIsOpen(true)
     })
 
     api.onUpdateAvailable((info: { version: string; releaseNotes?: unknown }) => {
       setVersion(info.version)
       setReleaseNotes((info.releaseNotes ?? '') as string)
       setState('available')
-      setIsChecking(false)
+      setIsOpen(true)
     })
 
     api.onUpdateNotAvailable(() => {
       setState('idle')
-      setIsChecking(false)
+      setIsOpen(false)
     })
 
     api.onUpdateProgress((progress: { percent: number }) => {
       setPercent(progress.percent)
       setState('downloading')
+      setIsOpen(true)
     })
 
     api.onUpdateDownloaded((info: UpdateInfo) => {
       setVersion(info.version)
       setState('downloaded')
-      setIsChecking(false)
+      setIsOpen(true)
     })
 
     api.onUpdateError((error: { message: string }) => {
       setErrorMessage(error.message)
       setState('error')
-      setIsChecking(false)
+      setIsOpen(true)
     })
   }, [])
 
   const handleDismiss = () => {
-    setState('idle')
+      setIsOpen(false)
   }
 
-  const handleCheckNow = async () => {
+  const handleBellClick = async () => {
+    if (state === 'idle' || state === 'error') {
+      setState('checking')
+      setIsOpen(true)
+      await window.electronAPI?.checkForUpdates()
+    } else {
+      setIsOpen(!isOpen)
+    }
+  }
+
+  const handleForceCheck = async () => {
     setState('checking')
-    setIsChecking(true)
+    setIsOpen(true)
     await window.electronAPI?.checkForUpdates()
   }
 
@@ -84,7 +95,7 @@ export default function UpdateBell() {
         ref={bellRef}
         type="button"
         className={`update-bell-btn ${hasNotification ? 'has-notification' : ''}`}
-        onClick={handleCheckNow}
+        onClick={handleBellClick}
         aria-label={hasNotification ? `Atualização: ${getStateLabel(state, version, percent, errorMessage)}` : 'Verificar atualizações'}
         title={hasNotification ? getStateLabel(state, version, percent, errorMessage) : 'Verificar atualizações'}
       >
@@ -101,12 +112,12 @@ export default function UpdateBell() {
         )}
         {hasNotification && (
           <span className="update-bell-badge" aria-hidden="true">
-            {state === 'downloading' ? `${percent}%` : ''}
+            {state === 'downloading' ? `${percent}%` : '•'}
           </span>
         )}
       </button>
 
-      {isChecking && createPortal(
+      {isOpen && createPortal(
         <div
           ref={bottomRef}
           className="update-bell-bottom-panel"
@@ -177,7 +188,7 @@ export default function UpdateBell() {
                   <span>{errorMessage}</span>
                 </div>
                 <div className="update-bell-error-actions">
-                  <button className="update-bell-retry-btn" onClick={handleCheckNow}>
+                  <button className="update-bell-retry-btn" onClick={handleForceCheck}>
                     <RefreshIcon sx={{ fontSize: 16 }} />
                     Tentar novamente
                   </button>
@@ -195,7 +206,7 @@ export default function UpdateBell() {
                   <strong>Nenhuma atualização disponível</strong>
                   <span>Você está na versão mais recente.</span>
                 </div>
-                <button className="update-bell-check-btn" onClick={handleCheckNow}>
+                <button className="update-bell-check-btn" onClick={handleForceCheck}>
                   <RefreshIcon sx={{ fontSize: 16 }} />
                   Verificar agora
                 </button>

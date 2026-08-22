@@ -1,11 +1,11 @@
 /* Bell button no toolbar - posicao fixa no canto inferior direito */
 .update-bell-container {
   position: fixed;
-  top: 24px;
+  bottom: 24px;
   right: 24px;
   z-index: 1050;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse; /* Panel opens upward */
   align-items: flex-end;
   gap: 8px;
 }
@@ -16,6 +16,7 @@
 }
 
 .update-bell-btn {
+  position: relative;
   width: 40px;
   height: 40px;
   display: inline-flex;
@@ -98,8 +99,8 @@
 
 .update-bell-badge {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: -4px;
+  right: -4px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
@@ -122,24 +123,24 @@
 /* Painel inferior - aparece ao clicar no bell */
 .update-bell-bottom-panel {
   position: fixed;
-  top: 80px;
-  right: 0;
+  bottom: 80px;
+  right: 24px;
   width: 340px;
   max-height: 460px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
   box-shadow:
     var(--shadow-high),
     0 0 40px var(--primary-red-glow);
   overflow: hidden;
   z-index: 1051;
-  animation: dropdownSlideIn 0.2s var(--ease-smooth);
-  border-top: none;
-  margin-bottom: 0;
+  animation: dropdownSlideUp 0.2s var(--ease-smooth);
+  border-bottom: none;
+  margin-top: 0;
 }
 
-@keyframes dropdownSlideIn {
+@keyframes dropdownSlideUp {
   from {
     opacity: 0;
     transform: translateY(16px);
@@ -155,7 +156,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-4);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-light);
   background: var(--surface-gradient);
   height: 48px;
 }
@@ -210,7 +211,7 @@
 .update-bell-spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-light);
   border-top-color: var(--primary-red);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -242,7 +243,7 @@
 .update-progress-bar {
   width: 100%;
   height: 6px;
-  background: var(--bg);
+  background: var(--bg-base);
   border-radius: 3px;
   overflow: hidden;
   margin-top: var(--space-1);
@@ -357,7 +358,7 @@
 .update-bell-release-notes {
   margin-top: var(--space-4);
   padding-top: var(--space-4);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-light);
 }
 
 .update-bell-release-notes summary {
@@ -411,8 +412,8 @@
 
 @media (max-width: 768px) {
   .update-bell-bottom-panel {
-    right: -4px;
+    right: 4px;
     width: calc(100vw - 8px);
-    border-radius: var(--radius-xl) var(--radius-0) 0 0;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   }
 }

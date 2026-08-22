@@ -10,7 +10,7 @@
 ; ============================================================================
 
 #define MyAppName          "ALFA PDF Reader"
-#define MyAppVersion "2.1.4"
+#define MyAppVersion "2.1.5"
 #define MyAppSuite "2.1"
 #define MyAppPublisher    "Alex Alves Amorim"
 #define MyAppBrand        "Dev de Favela"
@@ -50,13 +50,14 @@ UninstallLogMode=append
 UninstallDisplayName=ALFA PDF Reader {#MyAppSuite}
 
 ; ---- Privilegios ------------------------------------------------------
-PrivilegesRequiredOverridesAllowed=dialog
+; Instalacao estritamente como administrador (por maquina, em Program Files).
+; Sem override por usuario: evita instalacoes hibridas e problemas de compatibilidade.
 PrivilegesRequired=admin
 
 ; ---- Configuracao do instalador ----------------------------------------
 ShowLanguageDialog=no
 LanguageDetectionMethod=none
-OutputBaseFilename=ALFA-PDF-Reader-2.1-Setup-x64
+OutputBaseFilename=ALFA-PDF-Reader-2.1.5-Setup-x64
 OutputDir=..\release
 Compression=lzma2/ultra64
 SolidCompression=yes

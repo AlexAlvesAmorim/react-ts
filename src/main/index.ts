@@ -12,6 +12,7 @@ import {
   loadSettings,
   saveSettings,
 } from './settings'
+import icon from '../../installer/assets/alfa.ico?asset'
 
 // Necessário para o pipeline de impressão carregar o pdf.js local via file://
 app.commandLine.appendSwitch('allow-file-access-from-files')
@@ -303,6 +304,7 @@ function createWindow(): void {
     height: 600,
     show: false,
     autoHideMenuBar: true,
+    icon,
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -557,9 +559,10 @@ ipcMain.handle(
 
 app.whenReady().then(() => {
   createWindow()
-  // Verifica atualizacao apos janela carregar completamente
-  // Isso garante que o renderer esteja pronto para receber eventos IPC
-  if (mainWindow) {
+  // Verifica atualizacao apos janela carregar completamente (apenas no app
+  // empacotado: em dev nao existe app-update.yml e o electron-updater falha,
+  // o que abriria o painel do sino com um erro a cada inicializacao).
+  if (app.isPackaged && mainWindow) {
     mainWindow.webContents.once('did-finish-load', () => {
       setTimeout(() => {
         autoUpdater.checkForUpdates().catch((err: Error) => {
