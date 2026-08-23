@@ -38,9 +38,7 @@ function getPdfPathFromArgs(argv: string[]): string | null {
 
     if (!candidate.toLowerCase().endsWith('.pdf')) continue
 
-    const resolved = path.isAbsolute(candidate)
-      ? candidate
-      : path.resolve(process.cwd(), candidate)
+    const resolved = path.isAbsolute(candidate) ? candidate : path.resolve(process.cwd(), candidate)
 
     if (fs.existsSync(resolved)) return resolved
   }
@@ -85,7 +83,10 @@ async function sendPdfToRenderer(pdfPath: string): Promise<void> {
     addRecentFile(pdfPath)
     app.addRecentDocument(pdfPath)
 
-    mainWindow.webContents.send('open-pdf-from-system', { buffer: new Uint8Array(buffer), fileName })
+    mainWindow.webContents.send('open-pdf-from-system', {
+      buffer: new Uint8Array(buffer),
+      fileName,
+    })
   } catch (err) {
     console.error('[OPEN-PDF] Erro ao ler PDF do sistema:', err)
   }
@@ -116,9 +117,8 @@ async function openPdfInPrintWindow(
   let printWin: BrowserWindow | null = null
 
   try {
-    const qualityScale = options.printQuality === 'draft' ? 1.0
-      : options.printQuality === 'high' ? 3.0
-      : 2.0
+    const qualityScale =
+      options.printQuality === 'draft' ? 1.0 : options.printQuality === 'high' ? 3.0 : 2.0
 
     const totalPages = await (async () => {
       try {
@@ -137,13 +137,12 @@ async function openPdfInPrintWindow(
     if (options.pageRange === 'current') {
       pagesToRender = [options.currentPage ?? 1]
     } else if (options.pageRange === 'custom' && options.customPages) {
-      pagesToRender = totalPages > 0
-        ? parsePageRangesInMain(options.customPages, totalPages)
-        : parsePageRangesInMain(options.customPages, Number.MAX_SAFE_INTEGER)
+      pagesToRender =
+        totalPages > 0
+          ? parsePageRangesInMain(options.customPages, totalPages)
+          : parsePageRangesInMain(options.customPages, Number.MAX_SAFE_INTEGER)
     } else {
-      pagesToRender = totalPages > 0
-        ? Array.from({ length: totalPages }, (_, i) => i + 1)
-        : []
+      pagesToRender = totalPages > 0 ? Array.from({ length: totalPages }, (_, i) => i + 1) : []
       renderAll = totalPages <= 0
     }
 
@@ -167,17 +166,20 @@ async function openPdfInPrintWindow(
   <script>
     const { ipcRenderer } = require('electron');
 
+    // Registra o listener ANTES de qualquer trabalho assincrono:
+    // o main process envia o payload ao receber 'print-window-ready',
+    // e esta escuta ja precisa estar ativa para nao perder a mensagem.
+    const payloadReceived = new Promise((resolve) => {
+      ipcRenderer.once('print-window-payload', (_event, data) => resolve(data));
+    });
+
     (async () => {
       try {
         const pdfjsLib = await import('./pdf.mjs');
         pdfjsLib.GlobalWorkerOptions.workerSrc = './pdf.worker.mjs';
 
-        const payload = await new Promise((resolve) => {
-          ipcRenderer.once('print-window-payload', (_event, data) => resolve(data));
-          ipcRenderer.send('print-window-ready');
-        });
-
-        const { bytes, password, pagesToRender, renderAll, renderScale } = payload;
+        ipcRenderer.send('print-window-ready');
+        const { bytes, password, pagesToRender, renderAll, renderScale } = await payloadReceived;
 
         const loadingTask = pdfjsLib.getDocument({
           data: bytes,
@@ -211,7 +213,7 @@ async function openPdfInPrintWindow(
         ipcRenderer.send('pdf-render-complete');
       } catch (err) {
         console.error('[PRINT] Erro ao renderizar:', err);
-        ipcRenderer.send('pdf-render-complete');
+        ipcRenderer.send('pdf-render-failed', String((err && err.message) || err));
       }
     })();
   </script>
@@ -232,9 +234,9 @@ async function openPdfInPrintWindow(
 
     let payloadDelivered = false
     const deliverPayload = () => {
-      if (payloadDelivered) return
+      if (payloadDelivered || !printWin || printWin.isDestroyed()) return
       payloadDelivered = true
-      printWin?.webContents.send('print-window-payload', {
+      printWin.webContents.send('print-window-payload', {
         bytes: options.file,
         password: options.password ?? null,
         pagesToRender,
@@ -243,30 +245,62 @@ async function openPdfInPrintWindow(
       })
     }
 
-    ipcMain.once('print-window-ready', () => {
-      if (printWin?.webContents.isLoading()) {
-        printWin.webContents.once('did-finish-load', deliverPayload)
-      } else {
-        deliverPayload()
-      }
-    })
+    // Handshake determinístico: o renderer da janela de impressão pede o
+    // payload quando está pronto (o listener lá é registrado antes de qq
+    // trabalho assíncrono), e o listener aqui já está ativo antes do load.
+    ipcMain.once('print-window-ready', deliverPayload)
 
     await printWin.loadFile(tmpHtmlPath)
 
-    await new Promise<void>((resolve) => {
-      ipcMain.once('pdf-render-complete', () => resolve())
-      setTimeout(() => { if (!payloadDelivered) deliverPayload() }, 1500)
-      setTimeout(resolve, 20000)
+    // Aguarda o término da renderização por evento. O timeout é apenas um
+    // watchdog: em vez de imprimir páginas em branco silenciosamente,
+    // a falha vira um erro explícito que chega ao usuário como toast.
+    const renderOk = await new Promise<boolean>((resolve) => {
+      const WATCHDOG_MS = 30000
+
+      const finish = (ok: boolean) => {
+        clearTimeout(watchdog)
+        ipcMain.removeListener('pdf-render-failed', onFailed)
+        resolve(ok)
+      }
+
+      const onFailed = (_event: unknown, message: string) => {
+        console.error('[PRINT] Falha na renderização da janela de impressão:', message)
+        finish(false)
+      }
+
+      const watchdog = setTimeout(() => {
+        console.error(`[PRINT] Timeout de ${WATCHDOG_MS}ms aguardando pdf-render-complete`)
+        finish(false)
+      }, WATCHDOG_MS)
+
+      ipcMain.once('pdf-render-complete', () => finish(true))
+      ipcMain.on('pdf-render-failed', onFailed)
+    })
+
+    if (!renderOk) {
+      throw new Error('Falha ao renderizar o PDF para impressão.')
+    }
+
+    // Os arquivos temporários (html + pdf.js) só são usados até o fim da
+    // renderização; quando a janela fechar (após o print), limpamos o dir.
+    printWin.once('closed', () => {
+      try {
+        fs.rmSync(tmpDir, { recursive: true, force: true })
+      } catch {
+        void 0
+      }
     })
 
     return printWin
   } catch {
     if (printWin && !printWin.isDestroyed()) printWin.close()
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true })
+    } catch {
+      void 0
+    }
     return null
-  } finally {
-    setTimeout(() => {
-      try { fs.rmSync(tmpDir, { recursive: true, force: true }) } catch { void 0 }
-    }, 10000)
   }
 }
 
@@ -292,8 +326,11 @@ async function buildFilteredPdf(
   }
 
   const newDoc = await PDFDocument.create()
-  const copiedPages = await newDoc.copyPages(pdfDoc, pagesToInclude.map(p => p - 1))
-  copiedPages.forEach(page => newDoc.addPage(page))
+  const copiedPages = await newDoc.copyPages(
+    pdfDoc,
+    pagesToInclude.map((p) => p - 1)
+  )
+  copiedPages.forEach((page) => newDoc.addPage(page))
 
   return newDoc.save()
 }
@@ -360,7 +397,7 @@ ipcMain.handle('get-printers', async () => {
 
   const printers = await mainWindow.webContents.getPrintersAsync()
 
-  return printers.map(p => ({
+  return printers.map((p) => ({
     name: p.name,
   }))
 })
@@ -402,7 +439,8 @@ ipcMain.handle(
     if (options.password) {
       return {
         success: false,
-        error: 'PDFs protegidos por senha não podem ser salvos diretamente pelo aplicativo. Use "Imprimir" e selecione "Microsoft Print to PDF" como impressora.',
+        error:
+          'PDFs protegidos por senha não podem ser salvos diretamente pelo aplicativo. Use "Imprimir" e selecione "Microsoft Print to PDF" como impressora.',
       }
     }
 
@@ -439,13 +477,10 @@ ipcMain.handle('get-app-version', () => app.getVersion())
 
 ipcMain.handle('get-print-settings', () => loadSettings().print)
 
-ipcMain.handle(
-  'save-print-settings',
-  (_event, print: Partial<PrintSettings>) => {
-    saveSettings({ print })
-    return true
-  }
-)
+ipcMain.handle('save-print-settings', (_event, print: Partial<PrintSettings>) => {
+  saveSettings({ print })
+  return true
+})
 
 // === AUTO-UPDATE (GitHub Releases) ========================================
 // Fluxo: ao iniciar, verifica update -> baixa em background -> notifica renderer.
@@ -528,9 +563,6 @@ ipcMain.handle('get-update-status', () => ({
   version: pendingUpdateInfo?.version ?? null,
 }))
 
-
-
-
 ipcMain.handle(
   'print-native',
   async (_event, options: PrintOptions & { file: Uint8Array; password?: string }) => {
@@ -576,8 +608,6 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
-
-
 
 app.on('open-file', (event, filePath) => {
   event.preventDefault()

@@ -48,10 +48,7 @@ export function ReaderPage() {
   }
 
   const tryOpenPdf = async (bytes: Uint8Array, name: string, password?: string) => {
-    const blob = new Blob(
-      [new Uint8Array(bytes)],
-      { type: 'application/pdf' }
-    )
+    const blob = new Blob([new Uint8Array(bytes)], { type: 'application/pdf' })
     const url = URL.createObjectURL(blob)
     try {
       await loadPdf(url, password)
@@ -79,7 +76,10 @@ export function ReaderPage() {
 
   const goToNextPage = () => {
     if (!activeTab) return
-    const nextPage = Math.min(activeTab.currentPage + 1, activeTab.totalPages || activeTab.currentPage)
+    const nextPage = Math.min(
+      activeTab.currentPage + 1,
+      activeTab.totalPages || activeTab.currentPage
+    )
     updateTab(activeTab.id, { currentPage: nextPage })
   }
 
@@ -153,12 +153,18 @@ export function ReaderPage() {
       const arrayBuffer = await (activeTab.data as Blob).arrayBuffer()
       const file = new Uint8Array(arrayBuffer)
 
-      await window.electronAPI.printSilent({
+      const result = await window.electronAPI.printSilent({
         ...options,
         file,
         currentPage: activeTab.currentPage,
         password: activeTab.password,
       })
+
+      if (result?.success) {
+        showToast('Documento enviado para a impressora.', 'success')
+      } else {
+        showToast(`Falha ao imprimir: ${result?.error ?? 'Erro desconhecido'}`, 'error')
+      }
     } catch (err) {
       console.error('Erro ao imprimir:', err)
       showToast('Erro ao enviar para impressão.', 'error')
@@ -321,6 +327,5 @@ export function ReaderPage() {
     </Layout>
   )
 }
-
 
 export default ReaderPage

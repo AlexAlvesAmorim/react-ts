@@ -1,12 +1,12 @@
 import '../../renderer/src/styles/toolbar.css'
-import ZoomInIcon from "@mui/icons-material/ZoomIn"
-import ZoomOutIcon from "@mui/icons-material/ZoomOut"
-import RestartAltIcon from "@mui/icons-material/RestartAlt"
-import PrintIcon from "@mui/icons-material/Print"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
-import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import UploadFileIcon from "@mui/icons-material/UploadFile"
-import { ThemeToggle } from "./ThemeToggle"
+import ZoomInIcon from '@mui/icons-material/ZoomIn'
+import ZoomOutIcon from '@mui/icons-material/ZoomOut'
+import RestartAltIcon from '@mui/icons-material/RestartAlt'
+import PrintIcon from '@mui/icons-material/Print'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import UploadFileIcon from '@mui/icons-material/UploadFile'
+import { ThemeToggle } from './ThemeToggle'
 
 type ToolbarProps = {
   currentPage: number
@@ -40,7 +40,7 @@ export function Toolbar({
   onOpenPdf,
 }: ToolbarProps) {
   return (
-    <div className={`pdf-controls ${isScrolled ? "scrolled" : ""}`}>
+    <div className={`pdf-controls ${isScrolled ? 'scrolled' : ''}`}>
       <div className="pdf-navigation">
         <button
           type="button"
@@ -55,9 +55,7 @@ export function Toolbar({
 
         {!isDocked && (
           <span className="pdf-page-info">
-            {totalPages > 0
-              ? `Página ${currentPage} de ${totalPages}`
-              : 'Carregando...'}
+            {totalPages > 0 ? `Página ${currentPage} de ${totalPages}` : 'Carregando...'}
           </span>
         )}
 
@@ -85,11 +83,7 @@ export function Toolbar({
           <ZoomOutIcon sx={{ fontSize: 20 }} />
         </button>
 
-        {!isDocked && (
-          <span className="pdf-zoom-info">
-            {zoomPercentage}%
-          </span>
-        )}
+        {!isDocked && <span className="pdf-zoom-info">{zoomPercentage}%</span>}
 
         <button
           type="button"
@@ -144,6 +138,5 @@ export function Toolbar({
         <ThemeToggle />
       </div>
     </div>
-
   )
 }

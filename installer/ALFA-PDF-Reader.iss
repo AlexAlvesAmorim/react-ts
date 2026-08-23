@@ -10,8 +10,8 @@
 ; ============================================================================
 
 #define MyAppName          "ALFA PDF Reader"
-#define MyAppVersion "2.1.5"
-#define MyAppSuite "2.1"
+#define MyAppVersion "2.1.6"
+#define MyAppSuite "2.1.6"
 #define MyAppPublisher    "Alex Alves Amorim"
 #define MyAppBrand        "Dev de Favela"
 #define MyAppURL         "https://github.com/AlexAlvesAmorim/AlfaPDF"
@@ -57,7 +57,7 @@ PrivilegesRequired=admin
 ; ---- Configuracao do instalador ----------------------------------------
 ShowLanguageDialog=no
 LanguageDetectionMethod=none
-OutputBaseFilename=ALFA-PDF-Reader-2.1.5-Setup-x64
+OutputBaseFilename=ALFA-PDF-Reader-2.1.6-Setup-x64
 OutputDir=..\release
 Compression=lzma2/ultra64
 SolidCompression=yes
@@ -176,6 +176,9 @@ Root: HKCU; Subkey: "Software\ALFA PDF Reader"; ValueType: dword;  ValueName: "I
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:RunAfter}"; WorkingDir: "{app}"; Flags: nowait postinstall skipifsilent runascurrentuser unchecked; Tasks: runafter
+; Atualiza o cache de icones do Windows apos instalar/atualizar (silencioso,
+; tambem em updates via electron-updater) para o icone aparecer no tamanho certo
+Filename: "{sys}\ie4uinit.exe"; Parameters: "-show"; Flags: nowait runhidden runascurrentuser
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\out";   Components: core

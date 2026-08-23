@@ -1,191 +1,132 @@
-# 📄 ALFA PDF Reader 2.0
-
-**Desktop PDF Reader profissional** — Electron + React + TypeScript
-
----
-
-## 📌 Compare: 1.2 vs 2.0
-
-| Feature | v1.2 | v2.0 |
-|---------|------|------|
-| **Auto Update** | ❌ Manual | ✅ Update automático via GitHub Releases |
-| **Update Notifier** | ❌ | ✅ Notificação integrada com seleção de versão |
-| **Botão Opções Avançadas** | Lateral na toolbar | ✅ No modal de impressão (organizado) |
-| **Pipeline de Impressão** | Básico | ✅ Roto utilzando pdf-lib para filtragem de páginas |
-| **UI/UX** | Responsivo | ✅ Dark theme, design system consistente |
-| **CI/CD** | Básico | ✅ GitHub Actions com lint + typecheck + test |
-| **Tipagem** | Parcial | ✅ TypeScript completo com tipos IPC |
-
----
-
-## 🚀 Sobre
-
-ALFA PDF Reader é um **software desktop** desenvolvido para uso profissional, com foco em:
-
-- **Performance**: Carregamento rápido e renderização otimizada
-- **Segurança**: Suporte total a PDFs protegidos por senha
-- **Integração**: Fluxo de impressão nativo com controle avançado
-- **Experiência**: Interface limpa, minimalista e sem perfis
-
----
-
-## 🧠 Experiência de Uso
-
-### 🖥️ Tela Inicial
-
-- Interface minimalista com foco no CTA principal (abrir PDF)
-- Identidade visual própria (logo, paleta vermelho, tipografia Space Grotesk)
-- Estado limpo e responsivo ao iniciar
-
-### 🔒 Segurança de Documentos
-
-- Suporte completo a PDFs protegidos por senha
-- Modal de autenticação dedicado antes da renderização
-- Feedback claro para senha incorreta
-- Senha propagada com segurança (visualização, impressão, exportação)
-
-### 📄 Leitura e Navegação
-
-- Renderização otimizada com PDF.js
-- Scroll contínuo vertical estilo leitura natural
-- Zoom dinâmico (50% - 300%)
-- Suporte a múltiplas abas (trabalhe com vários documentos)
-- Navegação por teclado (← → PageUp PageDown)
-
-### 🖨️ Impressão Integrada
-
-- Seleção de impressora com lista detectada do sistema
-- Controle de cópias, cores, qualidade e intervalo de páginas
-- **Novidade 2.0**: Botão "Opções avançadas" dentro do modal envia direto ao diálogo nativo do Windows
-- Trabalha com impressoras físicas (EPSON L3150 testado) e "Microsoft Print to PDF"
-- Pipeline próprio para contornar limitações de bibliotecas com PDFs protegidos
-
-### 🔄 Auto Update
-
-- Verificação automática de atualizações ao iniciar (após 3s)
-- Interface de notificação no canto inferior direito
-- Download em background
-- Instalação automática ao fechar (ou manual via botão "Instalar agora")
-
----
-
-## 🧩 Arquitetura Técnica
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    Electron Main (Node.js)               │
-│  - Controle de janelas, impressão, gravação de arquivos │
-│  - IPC para renderer (context isolation)                 │
-│  - Auto-updater (electron-updater)                       │
-└──────────────────────────┬──────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                   Electron Renderer (React)              │
-│  - Pagina Reader (canvas + PDF.js)                       │
-│  - Toolbar (navegação, zoom, abrir PDF, imprimir)       │
-│  - Modais: PasswordDialog, PrintDialog, WelcomeScreen   │
-│  - Hooks: usePdfTabs, useToast, Print handlers          │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Tecnologias
-
-- **Electron** 30 — Runtime desktop
-- **React** 18 — Interface
-- **TypeScript** 5.2 — Tipagem forte
-- **Vite** 5 — Build and HMR
-- **pdf-lib** — Filtragem de páginas para salvar como PDF
-- **MUI** 7 — Componentes de interface
-- **electron-updater** — Auto-update via GitHub Releases
-
----
-
-## 🧪 Desenvolvimento
-
-```bash
-# Preparação
-npm ci
-
-# Scripts
-npm run dev           # Desenvolvimento (Electron + Vite)
-npm run typecheck     # Verificação TypeScript
-npm run lint          # Lint ESLint
-npm run test          # Testes Vitest
-npm run build         # Build produção
-
-# GitHub Actions
-.yml config: npm ci → typecheck → lint → test
-```
-
----
- 
-## 📦 Distribuição
- 
- **Instalador oficial: Inno Setup** (mais profissional e leve)
- 
- - **Build para Windows**: Instalador Inno Setup com branding personalizado
- - **Tamanho otimizado**: ~17 MB (comparado a 114 MB do NSIS)
- - **Tema visual**: Sidebar vermelho (#e4002b) com logo ALFA
- - **Suporte multilíngua**: PT-BR e EN
- - **Features**: Atalhos desktop, associação .pdf, atualização automática
- - **App ID**: `com.alex.pdfreader`
- - **Instalador**: `ALFA PDF Reader Setup 2.0.0.exe`
-
----
-
-## 📊 Estatísticas
-
 <div align="center">
 
-<img height="180em" src="https://github-readme-stats.vercel.app/api?username=AlexAlvesAmorim&show_icons=true&theme=tokyonight&hide_border=true"/>
-<img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=AlexAlvesAmorim&layout=compact&theme=tokyonight&hide_border=true"/>
+<img src="installer/assets/logo.png" alt="ALFA PDF Reader" width="180" />
+
+# ALFA PDF Reader
+
+**O visualizador PDF profissional — rápido, elegante e brasileiro.**
+
+[![Versão](https://img.shields.io/badge/versão-2.1.6-e4002b?style=for-the-badge)](https://github.com/AlexAlvesAmorim/AlfaPDF/releases/latest)
+[![Plataforma](https://img.shields.io/badge/plataforma-Windows%2010%2B-0078d4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/AlexAlvesAmorim/AlfaPDF)
+[![Electron](https://img.shields.io/badge/Electron-43-47848f?style=for-the-badge&logo=electron&logoColor=white)](https://www.electronjs.org/)
+[![Licença](https://img.shields.io/badge/licença-MIT-green?style=for-the-badge)](LICENSE.md)
+
+[⬇️ **Baixar última versão**](https://github.com/AlexAlvesAmorim/AlfaPDF/releases/latest) · [📋 Notas de release](release-notes.md) · [🐛 Reportar bug](https://github.com/AlexAlvesAmorim/AlfaPDF/issues)
 
 </div>
 
 ---
 
-## 🔥 Contribuições
+## 📖 Sobre
 
-<div align="center">
+O **ALFA PDF Reader** é um software desktop profissional desenvolvido com Electron + React + TypeScript, com foco no que importa: abrir rápido, ler confortavelmente e imprimir com controle total — sem anúncios, sem telemetria, sem complicação.
 
-<img src="https://streak-stats.demolab.com?user=AlexAlvesAmorim&theme=tokyonight&hide_border=true" />
-
-</div>
-
----
-
-## 🌐 Links
-
-<div align="center">
-
-<a href="https://github.com/AlexAlvesAmorim/AlexAlvesAmorim">
-<img src="https://img.shields.io/badge/GitHub-AlexAlvesAmorim?style=for-the-badge&logo=github&logoColor=white"/>
-</a>
-
-</div>
+- ⚡ **Performance**: abertura instantânea e renderização otimizada com PDF.js
+- 🔒 **Segurança**: suporte total a PDFs protegidos por senha, tudo processado localmente
+- 🖨️ **Impressão profissional**: impressora, cópias, cores, intervalo de páginas e qualidade — com memória das suas preferências
+- 🔄 **Auto-update silencioso**: novas versões chegam sozinhas pelo sino de notificações
 
 ---
 
-## 📄 Changelog 2.0
+## 🆚 Comparativo
 
-### Novidades
+### com leitores populares
 
-- **Auto-updater integrado** via `electron-updater`
-- **UpdateNotifier** — banner de notificação com progresso de download
-- **Botão Opções Avançadas** agora dentro do modal de impressão (UX mais limpa)
-- **Pipeline de impressão revisado** com `pdf-lib` para filtragem de páginas
-- **Universalização de tipos** — todos os arquivos com tipagem completa
-- **Design system** com cores, sombras e animações consistentes
+| Recurso | **ALFA PDF Reader** | Edge / Chrome | Acrobat Reader | Sumatra PDF |
+|---|:-:|:-:|:-:|:-:|
+| Múltiplas abas | ✅ | ✅ | ✅ | ✅ |
+| Leve e rápido de abrir | ✅ | ⚠️ | ❌ | ✅ |
+| Impressão avançada (intervalo, qualidade, cópias) | ✅ | ⚠️ básico | ✅ | ❌ |
+| Memória das configurações de impressão | ✅ | ❌ | ❌ | ❌ |
+| Auto-update automático em background | ✅ | — | ✅ | ❌ |
+| PDFs protegidos por senha | ✅ | ✅ | ✅ | ⚠️ |
+| Interface moderna dark/light | ✅ | ⚠️ | ⚠️ | ❌ |
+| 100% offline, sem telemetria/ads | ✅ | ❌ | ❌ | ✅ |
+
+### evolução do projeto
+
+| Versão | Destaques |
+|---|---|
+| **v1.2** | Primeira versão estável: leitura, zoom e impressão básica |
+| **v2.0** | Repaginação completa: nova identidade dark/vermelha, múltiplas abas, pipeline de impressão com `pdf-lib`, modal de senha dedicado |
+| **v2.1.1 – 2.1.3** | Auto-update via GitHub Releases, sino de notificações, impressão 100% offline, arquivos recentes + Jump List, Electron 43 |
+| **v2.1.5** | Correção do auto-update, ícone multi-resolução refeito, sino no canto inferior, instalação administrador-only |
+| **v2.1.6** ← atual | Patch silencioso: cache de ícones corrigido nos atalhos, impressão por eventos determinísticos, lint + typecheck 100% verdes |
+
+---
+
+## ✨ Recursos principais
+
+| | |
+|---|---|
+| 📑 **Múltiplas abas** | Trabalhe com vários documentos ao mesmo tempo |
+| 🔍 **Zoom inteligente** | De 50% a 300%, com atalhos de teclado |
+| ⌨️ **Navegação por teclado** | Setas, PageUp/PageDown, `Ctrl+P` imprimir, `Ctrl+W` fechar aba |
+| 🕘 **Arquivos recentes** | Últimos 10 documentos + integração com a Jump List do Windows |
+| 📝 **Salvar como PDF** | Reorganize e selecione páginas para exportar um novo PDF |
+| 🖨️ **Impressão avançada** | Silenciosa (direto na impressora) ou nativa (diálogo do Windows) |
+| 🔐 **PDFs com senha** | Modal dedicada, senha propagada com segurança em todo o fluxo |
+| 🎨 **Temas** | Dark (padrão), Light e Midnight |
+| 🔔 **Atualizações** | Sino no canto inferior com progresso de download e instalação em 1 clique |
+| 🔗 **Associação .pdf** | Duplo clique abre direto no ALFA |
+
+---
+
+## 🚀 Instalação
+
+1. Baixe `ALFA-PDF-Reader-2.1.6-Setup-x64.exe` na [página de releases](https://github.com/AlexAlvesAmorim/AlfaPDF/releases/latest)
+2. Execute **como administrador** (instalação por máquina em `C:\Program Files\ALFA PDF Reader`)
+3. Pronto — atalhos na Área de Trabalho e Menu Iniciar, `.pdf` associado
+
+> **Requisitos**: Windows 10 ou superior (64-bit)
 
 ---
 
 ## 🛠️ Desenvolvimento
 
-> Trabalho em andamento. Sinta-se à vontade para abrir issues ou sugerir melhorias.
+```bash
+npm install          # instalar dependências
+npm run dev          # rodar em modo desenvolvimento (hot reload)
+npm run build        # build de produção (out/)
+npm run dist         # build + instalador Inno Setup + latest.yml
+npm test             # testes (vitest)
+npm run lint         # ESLint (0 warnings)
+npm run typecheck    # TypeScript (main + renderer)
+npm run format       # Prettier
+```
+
+### Stack
+
+| Camada | Tecnologia |
+|---|---|
+| Runtime | Electron 43 (Node 24) |
+| UI | React 18 + MUI 7 + Emotion |
+| Build | electron-vite + Vite 5 |
+| PDF | pdfjs-dist 5.4 (render) + pdf-lib (edição) |
+| Update | electron-updater → GitHub Releases |
+| Instalador | Inno Setup 6 (tema customizado PT-BR/EN) |
+
+### Estrutura
+
+```
+src/
+├── main/       # processo principal: janelas, IPC, impressão, auto-update
+├── preload/    # contextBridge seguro (contextIsolation)
+├── renderer/   # app React (páginas, módulos, estilos)
+├── shared/     # componentes, hooks, tipos e utils compartilhados
+│   └── tests/  # vitest + testing-library
+scripts/        # build do instalador, geração/aplicação de ícone
+installer/      # Inno Setup (.iss) + assets visuais
+```
 
 ---
 
-### Attribution
+## 📝 Licença
 
-Desenvolvido por **Alex Alves Amorim** — [GitHub](https://github.com/AlexAlvesAmorim)
+[MIT](LICENSE.md) © 2026 Alex Alves Amorim
+
+<div align="center">
+
+**Dev de Favela** — software profissional brasileiro 🇧🇷
+
+</div>

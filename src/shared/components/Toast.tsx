@@ -19,8 +19,8 @@ interface ToastItemProps {
 
 const ICONS: Record<ToastType, JSX.Element> = {
   success: <CheckCircleOutlineIcon sx={{ fontSize: 20 }} />,
-  error:   <ErrorOutlineIcon       sx={{ fontSize: 20 }} />,
-  info:    <InfoOutlinedIcon        sx={{ fontSize: 20 }} />,
+  error: <ErrorOutlineIcon sx={{ fontSize: 20 }} />,
+  info: <InfoOutlinedIcon sx={{ fontSize: 20 }} />,
 }
 
 function ToastItem({ toast, onRemove }: ToastItemProps) {

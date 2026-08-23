@@ -1,12 +1,5 @@
 import { Document, Page } from 'react-pdf'
-import {
-  RefObject,
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo
-} from 'react'
+import { RefObject, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import '../../renderer/src/styles/pdfviewer.css'
 import { PdfTab } from '../types/pdf'
 
@@ -17,12 +10,7 @@ interface PdfViewerProps {
   onLoadSuccess?: (numPages: number) => void
 }
 
-function PdfViewer({
-  tab,
-  containerRef,
-  onTabUpdate,
-  onLoadSuccess
-}: PdfViewerProps) {
+function PdfViewer({ tab, containerRef, onTabUpdate, onLoadSuccess }: PdfViewerProps) {
   const [numPages, setNumPages] = useState(0)
 
   const isNavigating = useRef(false)
@@ -160,7 +148,9 @@ function PdfViewer({
                 <circle className="pdf-progress-bg" cx="50" cy="50" r="40" />
                 <circle
                   className="pdf-progress-circle"
-                  cx="50" cy="50" r="40"
+                  cx="50"
+                  cy="50"
+                  r="40"
                   strokeDasharray="251"
                   strokeDashoffset="0"
                 />

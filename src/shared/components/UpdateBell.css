@@ -36,12 +36,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    transparent 0%,
-    var(--glass-medium) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(135deg, transparent 0%, var(--glass-medium) 50%, transparent 100%);
   opacity: 0;
   transition: opacity var(--duration-fast);
 }
@@ -89,7 +84,8 @@
 }
 
 @keyframes bellPulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 var(--primary-red-glow);
   }
   50% {
@@ -116,8 +112,14 @@
 }
 
 @keyframes badgePop {
-  0% { transform: scale(0); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Painel inferior - aparece ao clicar no bell */
@@ -218,7 +220,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .update-bell-status-text {

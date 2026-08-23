@@ -1,9 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, Select, MenuItem, FormControl, InputLabel,
-  TextField, FormLabel, CircularProgress, Alert, Box,
-  ThemeProvider, createTheme, Typography, Divider, Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  TextField,
+  FormLabel,
+  CircularProgress,
+  Alert,
+  Box,
+  ThemeProvider,
+  createTheme,
+  Typography,
+  Divider,
+  Chip,
 } from '@mui/material'
 import SaveIcon from '@mui/icons-material/Save'
 import PrintIcon from '@mui/icons-material/Print'
@@ -13,17 +28,20 @@ import PaletteIcon from '@mui/icons-material/Palette'
 import LayersIcon from '@mui/icons-material/Layers'
 import type { PrintOptions, PrintQuality, PrintSettings } from '../types'
 
-interface Printer { name: string; isDefault?: boolean }
+interface Printer {
+  name: string
+  isDefault?: boolean
+}
 
 interface PrintDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onPrint: (options: PrintOptions) => void;
-  onSaveAsPdf: (options: PrintOptions) => void;
-  onPrintAdvanced?: () => void;
-  currentPage: number;
-  totalPages: number;
-  fileName?: string;
+  open: boolean
+  onClose: () => void
+  onPrint: (options: PrintOptions) => void | Promise<void>
+  onSaveAsPdf: (options: PrintOptions) => void
+  onPrintAdvanced?: () => void
+  currentPage: number
+  totalPages: number
+  fileName?: string
 }
 
 const darkTheme = createTheme({
@@ -92,7 +110,7 @@ const darkTheme = createTheme({
       },
     },
   },
-});
+})
 
 interface SectionProps {
   icon: React.ReactNode
@@ -144,7 +162,14 @@ function Section({ icon, title, children }: SectionProps) {
 }
 
 export default function PrintDialog({
-  open, onClose, onPrint, onSaveAsPdf, onPrintAdvanced, currentPage, totalPages, fileName,
+  open,
+  onClose,
+  onPrint,
+  onSaveAsPdf,
+  onPrintAdvanced,
+  currentPage,
+  totalPages,
+  fileName,
 }: PrintDialogProps) {
   const [printers, setPrinters] = useState<Printer[]>([])
   const [selectedPrinter, setSelectedPrinter] = useState('')
@@ -162,7 +187,8 @@ export default function PrintDialog({
     let mounted = true
     setLoading(true)
     setError(null)
-    window.electronAPI.getPrinters()
+    window.electronAPI
+      .getPrinters()
       .then((list: Printer[]) => {
         if (!mounted) return
         if (list.length) {
@@ -177,14 +203,21 @@ export default function PrintDialog({
           setError('Nenhuma impressora encontrada no sistema.')
         }
       })
-      .catch(() => { if (mounted) setError('Erro ao carregar lista de impressoras.') })
-      .finally(() => { if (mounted) setLoading(false) })
-    return () => { mounted = false }
+      .catch(() => {
+        if (mounted) setError('Erro ao carregar lista de impressoras.')
+      })
+      .finally(() => {
+        if (mounted) setLoading(false)
+      })
+    return () => {
+      mounted = false
+    }
   }, [open])
 
   useEffect(() => {
     if (!open || !window.electronAPI?.getPrintSettings) return
-    window.electronAPI.getPrintSettings()
+    window.electronAPI
+      .getPrintSettings()
       .then((s: PrintSettings | null) => {
         if (!s) return
         setCopies(s.copies ?? 1)
@@ -194,7 +227,9 @@ export default function PrintDialog({
         setPrintQuality(s.printQuality ?? 'normal')
         savedPrinterRef.current = s.printerName ?? null
       })
-      .catch(() => { /* sem settings salvas */ })
+      .catch(() => {
+        /* sem settings salvas */
+      })
   }, [open])
 
   const persistSettings = () => {
@@ -221,12 +256,19 @@ export default function PrintDialog({
     printQuality,
   })
 
-  const handlePrint = () => {
-    if (!selectedPrinter) { setError('Selecione uma impressora.'); return }
+  const handlePrint = async () => {
+    if (!selectedPrinter) {
+      setError('Selecione uma impressora.')
+      return
+    }
     setLoading(true)
     persistSettings()
-    onPrint(buildOptions())
-    setTimeout(() => { setLoading(false); onClose() }, 800)
+    try {
+      await onPrint(buildOptions())
+    } finally {
+      setLoading(false)
+      onClose()
+    }
   }
 
   const handleSaveAsPdf = () => {
@@ -235,11 +277,12 @@ export default function PrintDialog({
     onClose()
   }
 
-  const pageRangeLabel = pageRange === 'all'
-    ? `Todas (${totalPages})`
-    : pageRange === 'current'
-      ? `Página ${currentPage}`
-      : customPages.trim() || 'Personalizado'
+  const pageRangeLabel =
+    pageRange === 'all'
+      ? `Todas (${totalPages})`
+      : pageRange === 'current'
+        ? `Página ${currentPage}`
+        : customPages.trim() || 'Personalizado'
 
   const qualityOptions: Array<{ value: PrintQuality; label: string; hint: string }> = [
     { value: 'draft', label: 'Rascunho', hint: 'Econômico' },
@@ -339,7 +382,9 @@ export default function PrintDialog({
                     type="number"
                     size="small"
                     value={copies}
-                    onChange={(e) => setCopies(Math.max(1, Math.min(99, Number(e.target.value) || 1)))}
+                    onChange={(e) =>
+                      setCopies(Math.max(1, Math.min(99, Number(e.target.value) || 1)))
+                    }
                     slotProps={{ htmlInput: { min: 1, max: 99 } }}
                     sx={{
                       width: 110,
@@ -398,12 +443,15 @@ export default function PrintDialog({
                         width: 18,
                         height: 18,
                         borderRadius: '4px',
-                        background: 'linear-gradient(135deg, #ff2d55 0%, #e4002b 50%, #1976d2 100%)',
+                        background:
+                          'linear-gradient(135deg, #ff2d55 0%, #e4002b 50%, #1976d2 100%)',
                         flexShrink: 0,
                       }}
                     />
                     <Box sx={{ flex: 1 }}>
-                      <Typography sx={{ fontSize: '0.82rem', fontWeight: 600 }}>Colorida</Typography>
+                      <Typography sx={{ fontSize: '0.82rem', fontWeight: 600 }}>
+                        Colorida
+                      </Typography>
                     </Box>
                   </Box>
                   <Box
@@ -434,12 +482,25 @@ export default function PrintDialog({
                       }}
                     />
                     <Box sx={{ flex: 1 }}>
-                      <Typography sx={{ fontSize: '0.82rem', fontWeight: 600 }}>Preto e branco</Typography>
+                      <Typography sx={{ fontSize: '0.82rem', fontWeight: 600 }}>
+                        Preto e branco
+                      </Typography>
                     </Box>
                   </Box>
                 </Box>
 
-                <FormLabel sx={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)', mb: 0.75, fontFamily: '"Space Grotesk", sans-serif', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                <FormLabel
+                  sx={{
+                    display: 'block',
+                    fontSize: '0.75rem',
+                    color: 'rgba(255,255,255,0.55)',
+                    mb: 0.75,
+                    fontFamily: '"Space Grotesk", sans-serif',
+                    fontWeight: 600,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                  }}
+                >
                   Qualidade
                 </FormLabel>
                 <Box sx={{ display: 'flex', gap: 1 }}>
@@ -462,10 +523,23 @@ export default function PrintDialog({
                           '&:hover': { borderColor: active ? '#e4002b' : 'rgba(255,255,255,0.18)' },
                         }}
                       >
-                        <Typography sx={{ fontSize: '0.82rem', fontWeight: 600, color: active ? '#ff6b80' : 'rgba(255,255,255,0.85)' }}>
+                        <Typography
+                          sx={{
+                            fontSize: '0.82rem',
+                            fontWeight: 600,
+                            color: active ? '#ff6b80' : 'rgba(255,255,255,0.85)',
+                          }}
+                        >
                           {label}
                         </Typography>
-                        <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontFamily: '"JetBrains Mono", monospace', mt: 0.25 }}>
+                        <Typography
+                          sx={{
+                            fontSize: '0.65rem',
+                            color: 'rgba(255,255,255,0.4)',
+                            fontFamily: '"JetBrains Mono", monospace',
+                            mt: 0.25,
+                          }}
+                        >
                           {hint}
                         </Typography>
                       </Box>
@@ -488,11 +562,29 @@ export default function PrintDialog({
                   color: 'rgba(255,255,255,0.5)',
                 }}
               >
-                <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#e4002b', boxShadow: '0 0 8px #e4002b' }} />
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    bgcolor: '#e4002b',
+                    boxShadow: '0 0 8px #e4002b',
+                  }}
+                />
                 <span style={{ color: 'rgba(255,255,255,0.7)' }}>{pageRangeLabel}</span>
-                <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.08)' }} />
-                <span>{copies} {copies === 1 ? 'cópia' : 'cópias'}</span>
-                <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.08)' }} />
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{ borderColor: 'rgba(255,255,255,0.08)' }}
+                />
+                <span>
+                  {copies} {copies === 1 ? 'cópia' : 'cópias'}
+                </span>
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{ borderColor: 'rgba(255,255,255,0.08)' }}
+                />
                 <span>{color ? 'Cor' : 'P&B'}</span>
               </Box>
             </Box>
@@ -500,15 +592,26 @@ export default function PrintDialog({
         </DialogContent>
 
         <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
-          <Button onClick={onClose} disabled={loading} color="inherit">Cancelar</Button>
+          <Button onClick={onClose} disabled={loading} color="inherit">
+            Cancelar
+          </Button>
           <Box sx={{ flex: 1 }} />
-          <Button variant="outlined" onClick={handleSaveAsPdf} disabled={loading} startIcon={<SaveIcon />}>
+          <Button
+            variant="outlined"
+            onClick={handleSaveAsPdf}
+            disabled={loading}
+            startIcon={<SaveIcon />}
+          >
             Salvar PDF
           </Button>
           {onPrintAdvanced && (
             <Button
               variant="outlined"
-              onClick={() => { persistSettings(); onPrintAdvanced(); onClose() }}
+              onClick={() => {
+                persistSettings()
+                onPrintAdvanced()
+                onClose()
+              }}
               disabled={loading}
               startIcon={<TuneIcon />}
               title="Abrir o diálogo de impressão do Windows"

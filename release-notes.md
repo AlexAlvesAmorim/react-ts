@@ -1,10 +1,16 @@
-# ALFA PDF Reader 2.1.5 - Release
+﻿# ALFA PDF Reader 2.1.6 - Release
 
 ## 📦 Sobre
 
-**ALFA PDF Reader 2.1.5** é um visualizador PDF profissional desenvolvido para Electron + React + TypeScript com foco em performance, segurança e experiência do usuário.
+**ALFA PDF Reader 2.1.6** é um visualizador PDF profissional desenvolvido para Electron + React + TypeScript com foco em performance, segurança e experiência do usuário.
 
-### 🛠️ Correções em 2.1.5
+### 🛠️ Correções em 2.1.6 (patch silencioso)
+
+- **Ícone do atalho sempre no tamanho correto** — após instalar/atualizar, o instalador atualiza automaticamente o cache de ícones do Windows (silencioso), resolvendo o ícone pequeno/antigo na Área de Trabalho e Menu Iniciar
+- **Impressão mais robusta** — o pipeline de impressão agora funciona por eventos determinísticos: falhas de renderização são detectadas e reportadas ao usuário, em vez de imprimir páginas em branco silenciosamente; o diálogo de impressão acompanha o envio real do documento
+- **Qualidade interna** — verificação de tipos e lint 100% verdes, remoção de código morto e padronização de estilo (sem mudança de comportamento para o usuário)
+
+### 🛠️ Correções incluídas da 2.1.5
 
 - **Correção do crash da atualização** — a verificação automática de updates agora acontece apenas no app instalado (em modo de desenvolvimento o electron-updater disparava erro ao iniciar, abrindo o painel de atualização com falha a cada abertura). Na versão instalada, o app verifica novas versões silenciosamente ao iniciar e só avisa quando há novidade
 - **Ícone do aplicativo corrigido** — o build anterior não incluía o ícone na janela/taskbar (aparecia o ícone padrão do Electron). Ícone multi-resolução (16–256px, 32bpp) recriado a partir do logo oficial e embutido no executável, na janela, nos atalhos e na associação de arquivos .pdf
@@ -31,7 +37,7 @@
 
 ### 📁 Arquivos do Release
 
-- `ALFA-PDF-Reader-2.1.5-Setup-x64.exe` - Instalador Inno Setup (~17 MB)
+- `ALFA-PDF-Reader-2.1.6-Setup-x64.exe` - Instalador Inno Setup
 - `latest.yml` - Manifesto de atualização automática (electron-updater)
 
 ### 🛠️ Tecnologias
@@ -44,7 +50,7 @@
 
 ### 🔧 Instalação
 
-1. Execute `ALFA-PDF-Reader-2.1.5-Setup-x64.exe` como administrador
+1. Execute `ALFA-PDF-Reader-2.1.6-Setup-x64.exe` como administrador
 2. Siga o assistente de instalação
 3. O aplicativo instalará em `C:\Program Files\ALFA PDF Reader\`
 4. Criará atalhos na Área de Trabalho e Menu Iniciar
@@ -53,7 +59,6 @@
 ### 📋 Requisitos
 
 - Windows 10 ou superior (64-bit)
-- ~17 MB de espaço em disco
 - Conexão internet opcional (para auto-update)
 
 ### 🔐 Segurança

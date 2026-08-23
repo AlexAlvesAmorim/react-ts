@@ -66,16 +66,16 @@ async function rebuildWinUnpacked() {
 
   console.log(`🖼️  Aplicando ícone e metadados em ${APP_EXE_NAME}...`)
   await rcedit(exePath, {
-    'icon': icon,
+    icon: icon,
     'file-version': pkg.version,
     'product-version': pkg.version,
     'version-string': {
-      'ProductName': 'ALFA PDF Reader',
-      'FileDescription': 'ALFA PDF Reader - Visualizador PDF Profissional',
-      'CompanyName': 'Alex Alves Amorim',
-      'LegalCopyright': 'Copyright (c) 2026 Alex Alves Amorim',
-      'OriginalFilename': 'ALFA PDF Reader.exe',
-      'InternalName': 'ALFA PDF Reader',
+      ProductName: 'ALFA PDF Reader',
+      FileDescription: 'ALFA PDF Reader - Visualizador PDF Profissional',
+      CompanyName: 'Alex Alves Amorim',
+      LegalCopyright: 'Copyright (c) 2026 Alex Alves Amorim',
+      OriginalFilename: 'ALFA PDF Reader.exe',
+      InternalName: 'ALFA PDF Reader',
     },
   })
   console.log('✅ Ícone e metadados aplicados com sucesso!')
@@ -83,7 +83,6 @@ async function rebuildWinUnpacked() {
   // 5. Cria resources/app com o app empacotado
   const appDir = join(target, 'resources', 'app')
   mkdirSync(appDir, { recursive: true })
-
 
   const appPkg = {
     name: pkg.name,
@@ -122,8 +121,8 @@ async function main() {
 
   console.log(`\n🚀 Building ALFA PDF Reader ${version}\n`)
 
-// 1. Build Electron app (electron-vite -> out/)
-  console.log('\ndY"� Building Electron app...')
+  // 1. Build Electron app (electron-vite -> out/)
+  console.log('\n🔨 Building Electron app...')
   const electronVitePath = join(ROOT, 'node_modules', 'electron-vite', 'bin', 'electron-vite.js')
   run(`node "${electronVitePath}" build`)
 
@@ -139,7 +138,10 @@ async function main() {
 
   // Atualiza versão no .iss se necessário
   let issContent = readFileSync(issPath, 'utf-8')
-  issContent = issContent.replace(/#define MyAppVersion\s+".+"/, `#define MyAppVersion "${version}"`)
+  issContent = issContent.replace(
+    /#define MyAppVersion\s+".+"/,
+    `#define MyAppVersion "${version}"`
+  )
   issContent = issContent.replace(/#define MyAppSuite\s+".+"/, `#define MyAppSuite "${version}"`)
   issContent = issContent.replace(
     /(OutputBaseFilename=ALFA-PDF-Reader-)\d+\.\d+(?=-Setup-x64)/,
@@ -199,7 +201,7 @@ releaseDate: ${new Date().toISOString()}
 files:
   - url: ${installerName}
     sha512: ${sha512}
-    size: ${(readFileSync(installerPath)).length}
+    size: ${readFileSync(installerPath).length}
 `
   writeFileSync(latestYmlPath, latestYmlContent)
   console.log(`\n📄 latest.yml gerado: ${latestYmlPath}`)
@@ -208,7 +210,9 @@ files:
   if (process.env.GH_TOKEN) {
     console.log('\n📤 Publicando no GitHub Releases...')
     try {
-      run(`gh release create ${versionTag} "${installerPath}" "${latestYmlPath}" --title "ALFA PDF Reader ${version}" --notes-file release-notes.md --repo AlexAlvesAmorim/AlfaPDF`)
+      run(
+        `gh release create ${versionTag} "${installerPath}" "${latestYmlPath}" --title "ALFA PDF Reader ${version}" --notes-file release-notes.md --repo AlexAlvesAmorim/AlfaPDF`
+      )
       console.log('\n✅ Publicado com sucesso!')
     } catch (e) {
       console.error('\n❌ Falha ao publicar:', e.message)
@@ -216,13 +220,15 @@ files:
     }
   } else {
     console.log('\n⚠️  GH_TOKEN não definido. Pule a publicação manual:')
-    console.log(`   gh release create ${versionTag} "${installerPath}" "${latestYmlPath}" --title "ALFA PDF Reader ${version}" --notes-file release-notes.md --repo AlexAlvesAmorim/AlfaPDF`)
+    console.log(
+      `   gh release create ${versionTag} "${installerPath}" "${latestYmlPath}" --title "ALFA PDF Reader ${version}" --notes-file release-notes.md --repo AlexAlvesAmorim/AlfaPDF`
+    )
   }
 
   console.log('\n🎉 Build completo!')
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('\n❌ Erro:', err.message)
   process.exit(1)
 })

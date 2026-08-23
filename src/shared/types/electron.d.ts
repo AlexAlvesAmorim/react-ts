@@ -27,13 +27,11 @@ declare global {
       savePrintSettings: (settings: PrintSettings) => Promise<boolean>
       printSilent: (
         options: PrintOptions & { file: Uint8Array }
-      ) => Promise<boolean>
+      ) => Promise<{ success: boolean; error?: string | null }>
       printNative: (
         options: PrintOptions & { file: Uint8Array }
       ) => Promise<{ success: boolean; error?: string | null }>
-      saveAsPdf: (
-        options: PrintOptions & { file: Uint8Array }
-      ) => Promise<SavePdfResult>
+      saveAsPdf: (options: PrintOptions & { file: Uint8Array }) => Promise<SavePdfResult>
       getAppVersion: () => Promise<string>
       onOpenPdfFromSystem: (
         callback: (data: { buffer: Uint8Array; fileName: string }) => void

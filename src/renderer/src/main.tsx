@@ -3,7 +3,8 @@ import './styles/global.css'
 
 if (!URL.parse) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (URL as any).parse = (url: string) => {
+  const URLAny = URL as any
+  URLAny.parse = (url: string) => {
     try {
       return new URL(url)
     } catch {

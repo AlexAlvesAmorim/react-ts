@@ -33,11 +33,7 @@
   padding: var(--space-2) var(--space-4);
   min-width: 100px;
   max-width: 180px;
-  background: linear-gradient(
-    135deg,
-    rgba(8, 2, 2, 0.82) 0%,
-    rgba(20, 13, 13, 0.82) 100%
-  );
+  background: linear-gradient(135deg, rgba(8, 2, 2, 0.82) 0%, rgba(20, 13, 13, 0.82) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -76,11 +72,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    circle at center,
-    rgba(228, 0, 43, 0.08) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle at center, rgba(228, 0, 43, 0.08) 0%, transparent 70%);
   border-radius: inherit;
   opacity: 0;
   transition: opacity var(--duration-fast);
@@ -217,13 +209,21 @@
 }
 
 @keyframes bounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-12px); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-12px);
+  }
 }
 
 @keyframes progress {
-  0% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -251; }
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -251;
+  }
 }
 
 .a4-page {

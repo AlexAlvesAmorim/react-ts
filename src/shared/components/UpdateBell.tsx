@@ -68,7 +68,7 @@ export default function UpdateBell() {
   }, [])
 
   const handleDismiss = () => {
-      setIsOpen(false)
+    setIsOpen(false)
   }
 
   const handleBellClick = async () => {
@@ -96,8 +96,16 @@ export default function UpdateBell() {
         type="button"
         className={`update-bell-btn ${hasNotification ? 'has-notification' : ''}`}
         onClick={handleBellClick}
-        aria-label={hasNotification ? `Atualização: ${getStateLabel(state, version, percent, errorMessage)}` : 'Verificar atualizações'}
-        title={hasNotification ? getStateLabel(state, version, percent, errorMessage) : 'Verificar atualizações'}
+        aria-label={
+          hasNotification
+            ? `Atualização: ${getStateLabel(state, version, percent, errorMessage)}`
+            : 'Verificar atualizações'
+        }
+        title={
+          hasNotification
+            ? getStateLabel(state, version, percent, errorMessage)
+            : 'Verificar atualizações'
+        }
       >
         {state === 'downloading' ? (
           <DownloadIcon sx={{ fontSize: 20 }} />
@@ -117,117 +125,129 @@ export default function UpdateBell() {
         )}
       </button>
 
-      {isOpen && createPortal(
-        <div
-          ref={bottomRef}
-          className="update-bell-bottom-panel"
-          role="menu"
-        >
-          <div className="update-bell-bottom-header">
-            <span className="update-bell-bottom-title">Atualizações</span>
-            <button className="update-bell-bottom-close" onClick={handleDismiss} aria-label="Fechar">
-              <CloseIcon sx={{ fontSize: 18 }} />
-            </button>
-          </div>
+      {isOpen &&
+        createPortal(
+          <div ref={bottomRef} className="update-bell-bottom-panel" role="menu">
+            <div className="update-bell-bottom-header">
+              <span className="update-bell-bottom-title">Atualizações</span>
+              <button
+                className="update-bell-bottom-close"
+                onClick={handleDismiss}
+                aria-label="Fechar"
+              >
+                <CloseIcon sx={{ fontSize: 18 }} />
+              </button>
+            </div>
 
-          <div className="update-bell-bottom-content">
-            {state === 'checking' && (
-              <div className="update-bell-status checking">
-                <div className="update-bell-spinner" />
-                <span>Verificando atualizações...</span>
-              </div>
-            )}
+            <div className="update-bell-bottom-content">
+              {state === 'checking' && (
+                <div className="update-bell-status checking">
+                  <div className="update-bell-spinner" />
+                  <span>Verificando atualizações...</span>
+                </div>
+              )}
 
-            {state === 'available' && (
-              <div className="update-bell-status available">
-                <DownloadIcon sx={{ fontSize: 24 }} />
-                <div className="update-bell-status-text">
-                  <strong>Nova versão {version} disponível</strong>
-                  <span>Baixando em segundo plano...</span>
+              {state === 'available' && (
+                <div className="update-bell-status available">
+                  <DownloadIcon sx={{ fontSize: 24 }} />
+                  <div className="update-bell-status-text">
+                    <strong>Nova versão {version} disponível</strong>
+                    <span>Baixando em segundo plano...</span>
+                  </div>
+                  <div className="update-progress-bar">
+                    <div className="update-progress-fill" style={{ width: `${percent}%` }} />
+                  </div>
+                  <span className="update-percent">{percent}%</span>
                 </div>
-                <div className="update-progress-bar">
-                  <div className="update-progress-fill" style={{ width: `${percent}%` }} />
-                </div>
-                <span className="update-percent">{percent}%</span>
-              </div>
-            )}
+              )}
 
-            {state === 'downloading' && (
-              <div className="update-bell-status downloading">
-                <DownloadIcon sx={{ fontSize: 24 }} />
-                <div className="update-bell-status-text">
-                  <strong>Baixando atualização...</strong>
+              {state === 'downloading' && (
+                <div className="update-bell-status downloading">
+                  <DownloadIcon sx={{ fontSize: 24 }} />
+                  <div className="update-bell-status-text">
+                    <strong>Baixando atualização...</strong>
+                  </div>
+                  <div className="update-progress-bar">
+                    <div className="update-progress-fill" style={{ width: `${percent}%` }} />
+                  </div>
+                  <span className="update-percent">{percent}%</span>
                 </div>
-                <div className="update-progress-bar">
-                  <div className="update-progress-fill" style={{ width: `${percent}%` }} />
-                </div>
-                <span className="update-percent">{percent}%</span>
-              </div>
-            )}
+              )}
 
-            {state === 'downloaded' && (
-              <div className="update-bell-status downloaded">
-                <CheckCircleIcon sx={{ fontSize: 24 }} />
-                <div className="update-bell-status-text">
-                  <strong>Atualização {version} pronta!</strong>
-                  <span>Clique para instalar e reiniciar.</span>
-                  <span className="update-admin-note">Requer permissão de administrador</span>
+              {state === 'downloaded' && (
+                <div className="update-bell-status downloaded">
+                  <CheckCircleIcon sx={{ fontSize: 24 }} />
+                  <div className="update-bell-status-text">
+                    <strong>Atualização {version} pronta!</strong>
+                    <span>Clique para instalar e reiniciar.</span>
+                    <span className="update-admin-note">Requer permissão de administrador</span>
+                  </div>
+                  <button
+                    className="update-bell-install-btn"
+                    onClick={() => window.electronAPI?.quitAndInstall()}
+                  >
+                    <RefreshIcon sx={{ fontSize: 18 }} />
+                    Instalar agora
+                  </button>
                 </div>
-                <button className="update-bell-install-btn" onClick={() => window.electronAPI?.quitAndInstall()}>
-                  <RefreshIcon sx={{ fontSize: 18 }} />
-                  Instalar agora
-                </button>
-              </div>
-            )}
+              )}
 
-            {state === 'error' && (
-              <div className="update-bell-status error">
-                <ErrorOutlineIcon sx={{ fontSize: 24 }} />
-                <div className="update-bell-status-text">
-                  <strong>Erro ao atualizar</strong>
-                  <span>{errorMessage}</span>
+              {state === 'error' && (
+                <div className="update-bell-status error">
+                  <ErrorOutlineIcon sx={{ fontSize: 24 }} />
+                  <div className="update-bell-status-text">
+                    <strong>Erro ao atualizar</strong>
+                    <span>{errorMessage}</span>
+                  </div>
+                  <div className="update-bell-error-actions">
+                    <button className="update-bell-retry-btn" onClick={handleForceCheck}>
+                      <RefreshIcon sx={{ fontSize: 16 }} />
+                      Tentar novamente
+                    </button>
+                    <button className="update-bell-dismiss-btn" onClick={handleDismiss}>
+                      Fechar
+                    </button>
+                  </div>
                 </div>
-                <div className="update-bell-error-actions">
-                  <button className="update-bell-retry-btn" onClick={handleForceCheck}>
+              )}
+
+              {state === 'idle' && (
+                <div className="update-bell-status idle">
+                  <MenuIcon sx={{ fontSize: 24 }} />
+                  <div className="update-bell-status-text">
+                    <strong>Nenhuma atualização disponível</strong>
+                    <span>Você está na versão mais recente.</span>
+                  </div>
+                  <button className="update-bell-check-btn" onClick={handleForceCheck}>
                     <RefreshIcon sx={{ fontSize: 16 }} />
-                    Tentar novamente
-                  </button>
-                  <button className="update-bell-dismiss-btn" onClick={handleDismiss}>
-                    Fechar
+                    Verificar agora
                   </button>
                 </div>
-              </div>
-            )}
+              )}
 
-            {state === 'idle' && (
-              <div className="update-bell-status idle">
-                <MenuIcon sx={{ fontSize: 24 }} />
-                <div className="update-bell-status-text">
-                  <strong>Nenhuma atualização disponível</strong>
-                  <span>Você está na versão mais recente.</span>
-                </div>
-                <button className="update-bell-check-btn" onClick={handleForceCheck}>
-                  <RefreshIcon sx={{ fontSize: 16 }} />
-                  Verificar agora
-                </button>
-              </div>
-            )}
-
-            {releaseNotes && (state === 'available' || state === 'downloaded') && (
-              <details className="update-bell-release-notes">
-                <summary>Novidades desta versão</summary>
-                <div className="update-bell-release-notes-content" dangerouslySetInnerHTML={{ __html: formatReleaseNotes(releaseNotes) }} />
-              </details>
-            )}
-          </div>
-        </div>,
-        document.body
-      )}
+              {releaseNotes && (state === 'available' || state === 'downloaded') && (
+                <details className="update-bell-release-notes">
+                  <summary>Novidades desta versão</summary>
+                  <div
+                    className="update-bell-release-notes-content"
+                    dangerouslySetInnerHTML={{ __html: formatReleaseNotes(releaseNotes) }}
+                  />
+                </details>
+              )}
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   )
 }
 
-function getStateLabel(state: UpdateState, version: string, percent: number, errorMessage: string): string {
+function getStateLabel(
+  state: UpdateState,
+  version: string,
+  percent: number,
+  errorMessage: string
+): string {
   switch (state) {
     case 'available':
       return `Nova versão ${version} disponível`

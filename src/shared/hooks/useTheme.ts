@@ -62,9 +62,7 @@ export function useTheme() {
 
   const toggle = useCallback(() => {
     setState((prev) =>
-      prev.mode === 'dark'
-        ? { mode: 'light', variant: 'day' }
-        : { mode: 'dark', variant: 'night' }
+      prev.mode === 'dark' ? { mode: 'light', variant: 'day' } : { mode: 'dark', variant: 'night' }
     )
   }, [])
 

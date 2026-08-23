@@ -3,4 +3,4 @@ import workerSrc from 'pdfjs-dist/build/pdf.worker?url'
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc
 
-export { pdfjsLib}
+export { pdfjsLib }

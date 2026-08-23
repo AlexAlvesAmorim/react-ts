@@ -1,6 +1,6 @@
 export interface Document {
-    id: string
-    name: string
-    path: string
-    totalPages: number
+  id: string
+  name: string
+  path: string
+  totalPages: number
 }
